@@ -1,9 +1,7 @@
-# Getting started with Crawlee
+## Crawl data from https://tracuunnt.gdt.gov.vn/tcnnt/mstdn.jsp
 
-This example uses `PlaywrightCrawler` to recursively crawl https://crawlee.dev using the browser automation library [Playwright](https://playwright.dev).
+## Run
 
-You can find more examples and documentation at the following links:
-
-- [Step-by-step tutorial](https://crawlee.dev/docs/introduction) for Crawlee
-- `PlaywrightCrawler` [API documentation](https://crawlee.dev/api/playwright-crawler/class/PlaywrightCrawler)
-- Other [examples](https://crawlee.dev/docs/examples/playwright-crawler)
+```bash
+docker run --name mst-crawler -p 3000:3000 letieu/mst-scan:1.0
+```
