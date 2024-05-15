@@ -4,7 +4,7 @@
 
 **Start**
 ```bash
-docker run --name mst-crawler -e CAP_SOLVER_KEY=xxx -p 3000:3000 letieu/mst-scan:1.1
+docker run -d --name mst-crawler -e CAP_SOLVER_KEY=xxx -p 3000:3000 letieu/mst-scan:1.1
 
 ```
 
