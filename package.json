@@ -4,13 +4,16 @@
     "type": "module",
     "description": "This is an example of a Crawlee project.",
     "dependencies": {
+        "@koa/bodyparser": "^5.1.1",
         "axios": "^1.6.8",
         "crawlee": "^3.0.0",
         "dotenv": "^16.4.5",
+        "koa": "^2.15.3",
         "playwright": "*"
     },
     "devDependencies": {
         "@apify/tsconfig": "^0.1.0",
+        "@types/koa": "^2.15.0",
         "@types/node": "^20.0.0",
         "tsx": "^4.4.0",
         "typescript": "~5.4.0"
