@@ -21,10 +21,11 @@ app.use(async function (ctx) {
   const taxIds = body.taxIds;
 
   if (crawler.running) {
+    ctx.status = 400
     ctx.body = "Running before, please wait";
   } else {
     await crawler.run(taxIds.map((id: string) => getUrl(id)));
-    const data = await crawler.exportData("default", "csv");
+    const data = await crawler.exportData("default", "json");
     ctx.body = data
   }
 });
