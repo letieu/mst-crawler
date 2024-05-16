@@ -1,7 +1,7 @@
 export const getCaptchaImage = async () => {
   const c = document.createElement("canvas");
   const img = document.querySelector(
-    "#tcmst > form > table > tbody > tr:nth-child(6) > td:nth-child(2) > table > tbody > tr > td:nth-child(2) > div > img"
+    "form > table > tbody > tr:nth-child(6) > td:nth-child(2) > table > tbody > tr > td:nth-child(2) > div > img"
   ) as HTMLImageElement;
   c.height = img.naturalHeight;
   c.width = img.naturalWidth;
@@ -34,12 +34,12 @@ export const getCompanyDetail = () => {
       // Remove any extra whitespace and line breaks
       value = value?.replace(/\s+/g, " ");
 
-      if (!key) continue
+      if (!key) continue;
 
       // Store key-value pairs in the data object
       data[key] = value;
     }
   });
 
-  return data
+  return data;
 };

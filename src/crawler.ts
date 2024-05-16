@@ -2,34 +2,49 @@ import { PlaywrightCrawler } from "crawlee";
 import { getCaptchaImage, getCompanyDetail } from "./evaluates.js";
 import { resolveCaptcha } from "./captcha.js";
 
-const baseUrl = "https://tracuunnt.gdt.gov.vn/tcnnt/mstdn.jsp";
+const baseUrls: Record<number, string> = {
+  1: "https://tracuunnt.gdt.gov.vn/tcnnt/mstdn.jsp",
+  2: "https://tracuunnt.gdt.gov.vn/tcnnt/mstcn.jsp",
+};
+
 const maxTries = 20; // Maximum number of tries to resolve captcha
 
-export function getUrl(taxId: string) {
-  return `${baseUrl}?taxId=${taxId}`;
+export function getUrl(taxId: string, type: number) {
+  return `${baseUrls[type]}?taxId=${taxId}`;
 }
 
 function getTaxId(url: string) {
   try {
     const urlObj = new URL(url);
-    if (urlObj.origin + urlObj.pathname === baseUrl) {
-      return urlObj.searchParams.get("taxId");
-    } else {
-      throw new Error("URL does not match baseUrl");
-    }
+    return urlObj.searchParams.get("taxId");
   } catch (error) {
     console.error("Invalid URL or URL does not match baseUrl:", error);
     return null;
   }
 }
 
+function getType(url: string) {
+  if (url.includes("mstdn")) return 1;
+  if (url.includes("mstcn")) return 2;
+
+  return undefined;
+}
+
 export const crawler = new PlaywrightCrawler({
   async requestHandler({ page, pushData }) {
     const taxId = getTaxId(page.url());
+    const type = getType(page.url());
+
+    if (!type) return;
     if (!taxId) return;
 
-    // Fill the "Mã số thuế"
-    await page.fill('input[name="mst"]', taxId);
+    if (type == 1) {
+      // Fill the "Mã số thuế"
+      await page.fill('input[name="mst"]', taxId);
+    } else {
+      // Fill the "Căn cước"
+      await page.fill('input[name="cmt2"]', taxId);
+    }
 
     let tries = 0;
     let captchaFailed = false;
