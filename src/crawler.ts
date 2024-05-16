@@ -109,5 +109,5 @@ export const crawler = new PlaywrightCrawler({
   },
 
   maxRequestsPerCrawl: 10,
-  headless: false,
+  //headless: false,
 });
