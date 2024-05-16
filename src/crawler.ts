@@ -1,6 +1,10 @@
-import { PlaywrightCrawler } from "crawlee";
+import { Configuration, PlaywrightCrawler } from "crawlee";
 import { getCaptchaImage, getCompanyDetail } from "./evaluates.js";
 import { resolveCaptcha } from "./captcha.js";
+
+const config = new Configuration({
+  persistStorage: false,
+});
 
 const baseUrls: Record<number, string> = {
   1: "https://tracuunnt.gdt.gov.vn/tcnnt/mstdn.jsp",
@@ -30,84 +34,94 @@ function getType(url: string) {
   return undefined;
 }
 
-export const crawler = new PlaywrightCrawler({
-  async requestHandler({ page, pushData }) {
-    const taxId = getTaxId(page.url());
-    const type = getType(page.url());
+export function newCrawler(pushData: (data: any) => void) {
+  return new PlaywrightCrawler(
+    {
+      async requestHandler({ page }) {
+        const pageUrl = page.url();
+        console.log(pageUrl);
 
-    if (!type) return;
-    if (!taxId) return;
+        const taxId = getTaxId(pageUrl);
+        const type = getType(pageUrl);
 
-    if (type == 1) {
-      // Fill the "Mã số thuế"
-      await page.fill('input[name="mst"]', taxId);
-    } else {
-      // Fill the "Căn cước"
-      await page.fill('input[name="cmt2"]', taxId);
-    }
+        if (!type) return;
+        if (!taxId) return;
 
-    let tries = 0;
-    let captchaFailed = false;
+        if (type == 1) {
+          // Fill the "Mã số thuế"
+          await page.fill('input[name="mst"]', taxId);
+        } else {
+          // Fill the "Căn cước"
+          await page.fill('input[name="cmt2"]', taxId);
+        }
 
-    do {
-      const captchaImage = await page.evaluate(getCaptchaImage);
-      const captchaRes = await resolveCaptcha(captchaImage);
-      await page.fill('input[name="captcha"]', captchaRes);
+        let tries = 0;
+        let captchaFailed = false;
 
-      await page.locator(".subBtn").click();
+        do {
+          const captchaImage = await page.evaluate(getCaptchaImage);
+          const captchaRes = await resolveCaptcha(captchaImage);
+          await page.fill('input[name="captcha"]', captchaRes);
 
-      await new Promise((res) => setTimeout(res, 500));
+          await page.locator(".subBtn").click();
 
-      captchaFailed = await page.evaluate(() => {
-        const e = document.querySelector(
-          'p[style="color:red;"]'
-        ) as HTMLParagraphElement;
-        return e?.innerText === "Vui lòng nhập đúng mã xác nhận!";
-      });
+          await new Promise((res) => setTimeout(res, 500));
 
-      tries++;
-    } while (captchaFailed && tries < maxTries);
+          captchaFailed = await page.evaluate(() => {
+            const e = document.querySelector(
+              'p[style="color:red;"]'
+            ) as HTMLParagraphElement;
+            return e?.innerText === "Vui lòng nhập đúng mã xác nhận!";
+          });
 
-    console.log(`Try: ${tries}`);
+          tries++;
+          console.log(`Try: ${tries}`);
+        } while (captchaFailed && tries < maxTries);
 
-    if (captchaFailed) {
-      console.log("Failed to resolve captcha after maximum tries.");
-      return; // Exit requestHandler if captcha resolution fails after max tries
-    }
+        if (captchaFailed) {
+          console.log("Failed to resolve captcha after maximum tries.");
+          return; // Exit requestHandler if captcha resolution fails after max tries
+        }
 
-    await page.locator(".subBtn").click();
+        await page.locator(".subBtn").click();
 
-    await new Promise((res) => setTimeout(res, 300));
+        await new Promise((res) => setTimeout(res, 300));
 
-    const detailLinks = await page.$$eval(
-      "table.ta_border tr td:nth-child(3) > a",
-      (links: HTMLLinkElement[]) => links.map((link) => link.href)
-    );
+        const detailLinks = await page.$$eval(
+          "table.ta_border tr td:nth-child(3) > a",
+          (links: HTMLLinkElement[]) => links.map((link) => link.href)
+        );
 
-    for (const detailLink of detailLinks) {
-      const match = detailLink.match(/javascript:submitform\('(.+)'\)/);
-      if (!match) return;
+        console.log(`${pageUrl} Found: ${detailLinks.length}`);
+        for (const detailLink of detailLinks) {
+          const match = detailLink.match(/javascript:submitform\('(.+)'\)/);
+          if (!match) return;
 
-      const formParam = match[1];
+          const formParam = match[1];
 
-      await page.evaluate((param) => {
-        // @ts-ignore
-        submitform(param);
-      }, formParam);
+          await page.evaluate((param) => {
+            // @ts-ignore
+            submitform(param);
+          }, formParam);
 
-      await new Promise((res) => setTimeout(res, 300));
+          await new Promise((res) => setTimeout(res, 300));
 
-      const res = await page.evaluate(getCompanyDetail);
+          const res = await page.evaluate(getCompanyDetail);
 
-      pushData({
-        ...res,
-        input: taxId,
-      });
+          pushData({
+            ...res,
+            input: taxId,
+          });
 
-      await page.goBack();
-    }
-  },
+          await page.goBack();
+          await new Promise((res) => setTimeout(res, 300));
+        }
+      },
 
-  maxRequestsPerCrawl: 10,
-  //headless: false,
-});
+      maxRequestsPerCrawl: 10,
+      maxConcurrency: 1,
+      headless: false,
+    },
+    config
+  );
+}
