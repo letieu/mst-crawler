@@ -3,7 +3,7 @@ import { getCaptchaImage, getCompanyDetail } from "./evaluates.js";
 import { resolveCaptcha } from "./captcha.js";
 
 const baseUrl = "https://tracuunnt.gdt.gov.vn/tcnnt/mstdn.jsp";
-const maxTries = 5; // Maximum number of tries to resolve captcha
+const maxTries = 20; // Maximum number of tries to resolve captcha
 
 export function getUrl(taxId: string) {
   return `${baseUrl}?taxId=${taxId}`;
@@ -84,7 +84,10 @@ export const crawler = new PlaywrightCrawler({
 
       const res = await page.evaluate(getCompanyDetail);
 
-      pushData(res);
+      pushData({
+        ...res,
+        input: taxId,
+      });
 
       await page.goBack();
     }
