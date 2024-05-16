@@ -120,7 +120,7 @@ export function newCrawler(pushData: (data: any) => void) {
 
       maxRequestsPerCrawl: 10,
       maxConcurrency: 1,
-      headless: false,
+      //headless: false,
     },
     config
   );
