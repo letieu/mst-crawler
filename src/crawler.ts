@@ -93,16 +93,11 @@ export function newCrawler(pushData: (data: any) => void) {
         );
 
         console.log(`${pageUrl} Found: ${detailLinks.length}`);
-        for (const detailLink of detailLinks) {
+        for (const detailLink of [...detailLinks]) {
           const match = detailLink.match(/javascript:submitform\('(.+)'\)/);
           if (!match) return;
 
-          const formParam = match[1];
-
-          await page.evaluate((param) => {
-            // @ts-ignore
-            submitform(param);
-          }, formParam);
+          await page.click(`a[href="${detailLink}"]`)
 
           await new Promise((res) => setTimeout(res, 300));
 
@@ -113,12 +108,13 @@ export function newCrawler(pushData: (data: any) => void) {
             input: taxId,
           });
 
-          await page.goBack();
+          await page.goBack()
+
           await new Promise((res) => setTimeout(res, 300));
         }
       },
 
-      maxRequestsPerCrawl: 10,
+      maxRequestsPerCrawl: 1000,
       maxConcurrency: 1,
       //headless: false,
     },
