@@ -5,7 +5,13 @@ import cors from "@koa/cors";
 
 const app = new Koa();
 app.use(bodyParser());
-app.use(cors());
+
+app.use(
+  cors({
+    origin: "*",
+    allowMethods: ["GET", "HEAD", "PUT", "POST", "DELETE", "PATCH", "OPTIONS"],
+  })
+);
 
 app.use(async (ctx, next) => {
   try {
@@ -19,7 +25,12 @@ app.use(async (ctx, next) => {
   }
 });
 
-app.use(async function (ctx) {
+app.use(async function (ctx, next) {
+  const method = ctx.method
+  if (method != "POST") {
+    return next()
+  }
+
   const body = ctx.request.body;
   const taxIds = body.taxIds;
   const type = body.type;
