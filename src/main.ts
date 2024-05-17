@@ -28,7 +28,7 @@ app.post("/", (req, res) => {
           uniqueKey: `${id}-${Date.now()}`,
         }))
       )
-      .then((result) => res.json(result));
+      .then(() => res.json(result));
   } catch (e: any) {
     res.statusCode = 400;
     res.send(e);
