@@ -1,32 +1,33 @@
 {
-    "name": "mst-crawler",
-    "version": "0.0.1",
-    "type": "module",
-    "description": "This is an example of a Crawlee project.",
-    "dependencies": {
-        "@koa/bodyparser": "^5.1.1",
-        "@koa/cors": "^5.0.0",
-        "axios": "^1.6.8",
-        "crawlee": "^3.0.0",
-        "dotenv": "^16.4.5",
-        "koa": "^2.15.3",
-        "playwright": "*"
-    },
-    "devDependencies": {
-        "@apify/tsconfig": "^0.1.0",
-        "@types/koa": "^2.15.0",
-        "@types/koa__cors": "^5.0.0",
-        "@types/node": "^20.0.0",
-        "tsx": "^4.4.0",
-        "typescript": "~5.4.0"
-    },
-    "scripts": {
-        "start": "npm run start:dev",
-        "start:prod": "node dist/main.js",
-        "start:dev": "tsx src/main.ts",
-        "build": "tsc",
-        "test": "echo \"Error: oops, the actor has no tests yet, sad!\" && exit 1"
-    },
-    "author": "It's not you it's me",
-    "license": "ISC"
+  "name": "mst-crawler",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "This is an example of a Crawlee project.",
+  "dependencies": {
+    "axios": "^1.6.8",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "crawlee": "^3.0.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "playwright": "*"
+  },
+  "devDependencies": {
+    "@apify/tsconfig": "^0.1.0",
+    "@types/body-parser": "^1.19.5",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.0.0",
+    "tsx": "^4.4.0",
+    "typescript": "~5.4.0"
+  },
+  "scripts": {
+    "start": "npm run start:dev",
+    "start:prod": "node dist/main.js",
+    "start:dev": "tsx src/main.ts",
+    "build": "tsc",
+    "test": "echo \"Error: oops, the actor has no tests yet, sad!\" && exit 1"
+  },
+  "author": "It's not you it's me",
+  "license": "ISC"
 }

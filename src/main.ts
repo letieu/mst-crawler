@@ -1,55 +1,40 @@
-import Koa from "koa";
+import express from "express";
 import { getUrl, newCrawler } from "./crawler.js";
-import { bodyParser } from "@koa/bodyparser";
-import cors from "@koa/cors";
+import bodyParser from "body-parser";
+import cors from "cors";
 
-const app = new Koa();
-app.use(bodyParser());
+const app = express();
+
+app.use(bodyParser.json());
 
 app.use(
   cors({
     origin: "*",
-    allowMethods: ["GET", "HEAD", "PUT", "POST", "DELETE", "PATCH", "OPTIONS"],
+    methods: ["GET", "HEAD", "PUT", "POST", "DELETE", "PATCH", "OPTIONS"],
   })
 );
 
-app.use(async (ctx, next) => {
+app.post("/", (req, res) => {
   try {
-    await next();
-  } catch (err: any) {
-    console.error(err);
-    ctx.status = err.statusCode || err.status || 500;
-    ctx.body = {
-      message: err.message,
-    };
+    const { taxIds, type } = req.body;
+    const result: any[] = [];
+
+    const crawler = newCrawler((data) => result.push(data));
+
+    crawler
+      .run(
+        taxIds.map((id: string) => ({
+          url: getUrl(id, type),
+          uniqueKey: `${id}-${Date.now()}`,
+        }))
+      )
+      .then((result) => res.json(result));
+  } catch (e: any) {
+    res.statusCode = 400;
+    res.send(e);
   }
 });
 
-app.use(async function (ctx, next) {
-  const method = ctx.method
-  if (method != "POST") {
-    return next()
-  }
-
-  const body = ctx.request.body;
-  const taxIds = body.taxIds;
-  const type = body.type;
-
-  const result: any[] = [];
-
-  const crawler = newCrawler((data) => result.push(data));
-
-  await crawler.run(
-    taxIds.map((id: string) => ({
-      url: getUrl(id, type),
-      uniqueKey: `${id}-${Date.now()}`,
-    }))
-  );
-
-  await new Promise((res) => setTimeout(res, 2_000));
-
-  ctx.body = result;
+app.listen(3000, () => {
+  console.log("server started");
 });
-
-app.listen(3000);
-console.log("server started");
