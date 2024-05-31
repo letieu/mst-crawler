@@ -37,8 +37,9 @@ function getType(url: string) {
 export function newCrawler(pushData: (data: any) => void) {
   return new PlaywrightCrawler(
     {
-      async requestHandler({ page }) {
-        const pageUrl = page.url();
+      async requestHandler({ request, page }) {
+        //const pageUrl = page.url();
+        const pageUrl = request.url;
         console.log(pageUrl);
 
         const taxId = getTaxId(pageUrl);
