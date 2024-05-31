@@ -35,6 +35,8 @@ app.post("/", (req, res) => {
   }
 });
 
-app.listen(3000, () => {
+const server = app.listen(3000, () => {
   console.log("server started");
 });
+
+server.setTimeout(1000 * 60 * 60) // 1h
