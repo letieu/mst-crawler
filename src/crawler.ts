@@ -114,7 +114,7 @@ export function newCrawler(pushData: (data: any) => void) {
         }
       },
 
-      maxRequestsPerCrawl: 1000,
+      maxRequestsPerCrawl: 100000000,
       maxConcurrency: 1,
       //headless: false,
     },
