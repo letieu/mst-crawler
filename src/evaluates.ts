@@ -21,8 +21,7 @@ export const getCompanyDetail = (isAll: boolean) => {
   // Get all table rows
   const rows = table?.querySelectorAll("tbody tr");
 
-  // Iterate over each table row
-  rows?.forEach(function(row) {
+  for (const row of rows || []) {
     const cells = row.querySelectorAll("th, td");
 
     // Iterate over each cell in the row
@@ -38,10 +37,10 @@ export const getCompanyDetail = (isAll: boolean) => {
 
       // Store key-value pairs in the data object
       data[key] = value;
-
-      if (!isAll) break; // get only first item
     }
-  });
+
+    if (!isAll) break;
+  }
 
   return data;
 };

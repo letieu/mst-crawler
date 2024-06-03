@@ -14,7 +14,7 @@ const baseUrls: Record<number, string> = {
 const maxTries = 20; // Maximum number of tries to resolve captcha
 
 export function getUrl(taxId: string, type: number, isAll: boolean) {
-  return `${baseUrls[type]}?taxId=${taxId}?isAll=${isAll}`;
+  return `${baseUrls[type]}?taxId=${taxId}&isAll=${isAll}`;
 }
 
 function getTaxId(url: string) {
@@ -34,7 +34,7 @@ function getIsAll(url: string) {
     return urlObj.searchParams.get("isAll") === 'true'
   } catch (error) {
     console.error("Invalid URL or URL does not match baseUrl:", error);
-    return null;
+    return false;
   }
 }
 
@@ -113,7 +113,7 @@ export function newCrawler(pushData: (data: any) => void) {
 
           await new Promise((res) => setTimeout(res, 300));
 
-          const res = await page.evaluate((isAll) => getCompanyDetail(!!isAll), isAll);
+          const res = await page.evaluate(getCompanyDetail, isAll);
 
           pushData({
             ...res,
