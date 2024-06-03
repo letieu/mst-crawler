@@ -113,7 +113,7 @@ export function newCrawler(pushData: (data: any) => void) {
 
           await new Promise((res) => setTimeout(res, 300));
 
-          const res = await page.evaluate(getCompanyDetail, isAll);
+          const res = await page.evaluate((isAll) => getCompanyDetail(!!isAll), isAll);
 
           pushData({
             ...res,
