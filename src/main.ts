@@ -16,15 +16,19 @@ app.use(
 
 app.post("/", (req, res) => {
   try {
-    const { taxIds, type } = req.body;
+    const { taxIds, type, isAll } = req.body;
     const result: any[] = [];
 
     const crawler = newCrawler((data) => result.push(data));
 
     crawler
       .run(
-        taxIds.map((id: string) => ({
-          url: getUrl(id, type),
+        (taxIds ?? []).map((id: string) => ({
+          url: getUrl(
+            id,
+            type || 1,
+            isAll || false,
+          ),
           uniqueKey: `${id}-${Date.now()}`,
         }))
       )

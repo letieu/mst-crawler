@@ -13,14 +13,25 @@ const baseUrls: Record<number, string> = {
 
 const maxTries = 20; // Maximum number of tries to resolve captcha
 
-export function getUrl(taxId: string, type: number) {
-  return `${baseUrls[type]}?taxId=${taxId}`;
+export function getUrl(taxId: string, type: number, isAll: boolean) {
+  return `${baseUrls[type]}?taxId=${taxId}?isAll=${isAll}`;
 }
 
 function getTaxId(url: string) {
   try {
     const urlObj = new URL(url);
     return urlObj.searchParams.get("taxId");
+  } catch (error) {
+    console.error("Invalid URL or URL does not match baseUrl:", error);
+    return null;
+  }
+}
+
+
+function getIsAll(url: string) {
+  try {
+    const urlObj = new URL(url);
+    return urlObj.searchParams.get("isAll") === 'true'
   } catch (error) {
     console.error("Invalid URL or URL does not match baseUrl:", error);
     return null;
@@ -38,12 +49,12 @@ export function newCrawler(pushData: (data: any) => void) {
   return new PlaywrightCrawler(
     {
       async requestHandler({ request, page }) {
-        //const pageUrl = page.url();
         const pageUrl = request.url;
         console.log(pageUrl);
 
         const taxId = getTaxId(pageUrl);
         const type = getType(pageUrl);
+        const isAll = getIsAll(pageUrl);
 
         if (!type) return;
         if (!taxId) return;
@@ -102,7 +113,7 @@ export function newCrawler(pushData: (data: any) => void) {
 
           await new Promise((res) => setTimeout(res, 300));
 
-          const res = await page.evaluate(getCompanyDetail);
+          const res = await page.evaluate(getCompanyDetail, isAll);
 
           pushData({
             ...res,

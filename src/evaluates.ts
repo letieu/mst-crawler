@@ -12,7 +12,7 @@ export const getCaptchaImage = async () => {
   return base64String;
 };
 
-export const getCompanyDetail = () => {
+export const getCompanyDetail = (isAll: boolean) => {
   const data: any = {};
 
   // Get the table element
@@ -22,7 +22,7 @@ export const getCompanyDetail = () => {
   const rows = table?.querySelectorAll("tbody tr");
 
   // Iterate over each table row
-  rows?.forEach(function (row) {
+  rows?.forEach(function(row) {
     const cells = row.querySelectorAll("th, td");
 
     // Iterate over each cell in the row
@@ -38,6 +38,8 @@ export const getCompanyDetail = () => {
 
       // Store key-value pairs in the data object
       data[key] = value;
+
+      if (!isAll) break; // get only first item
     }
   });
 
