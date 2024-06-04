@@ -12,7 +12,7 @@ export const getCaptchaImage = async () => {
   return base64String;
 };
 
-export const getCompanyDetail = (isAll: boolean) => {
+export const getCompanyDetail = () => {
   const data: any = {};
 
   // Get the table element
@@ -38,8 +38,6 @@ export const getCompanyDetail = (isAll: boolean) => {
       // Store key-value pairs in the data object
       data[key] = value;
     }
-
-    if (!isAll) break;
   }
 
   return data;

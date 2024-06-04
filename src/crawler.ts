@@ -113,7 +113,7 @@ export function newCrawler(pushData: (data: any) => void) {
 
           await new Promise((res) => setTimeout(res, 300));
 
-          const res = await page.evaluate(getCompanyDetail, isAll);
+          const res = await page.evaluate(getCompanyDetail);
 
           pushData({
             ...res,
@@ -121,8 +121,11 @@ export function newCrawler(pushData: (data: any) => void) {
           });
 
           await page.goBack()
-
           await new Promise((res) => setTimeout(res, 300));
+
+          if (!isAll) {
+            break;
+          }
         }
       },
 
