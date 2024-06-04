@@ -104,8 +104,14 @@ export function newCrawler(pushData: (data: any) => void) {
           (links: HTMLLinkElement[]) => links.map((link) => link.href)
         );
 
+        const notes = await page.$$eval(
+          "table.ta_border tr td:nth-child(7) > a",
+          (items: HTMLLinkElement[]) => items.map((item) => item.textContent)
+        );
+
         console.log(`${pageUrl} Found: ${detailLinks.length}`);
-        for (const detailLink of [...detailLinks]) {
+
+        for (const [index, detailLink] of detailLinks.entries()) {
           const match = detailLink.match(/javascript:submitform\('(.+)'\)/);
           if (!match) return;
 
@@ -118,6 +124,7 @@ export function newCrawler(pushData: (data: any) => void) {
           pushData({
             ...res,
             input: taxId,
+            note: notes[index]
           });
 
           await page.goBack()
